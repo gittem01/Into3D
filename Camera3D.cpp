@@ -1,10 +1,13 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "Camera3D.h"
+#include "SmartThing.h"
 
-
-Camera3D::Camera3D(glm::vec3 pos, int* mouseData, GLFWwindow* window) {
+Camera3D::Camera3D(glm::vec3 pos, int* mouseData, int* keyData, GLFWwindow* window) {
 	this->pos = pos;
 	this->rot = glm::vec3(0, 0, 0);
 	this->mouseData = mouseData;
+	this->keyData = keyData;
 	this->window = window;
 
 	int width, height;
@@ -20,7 +23,7 @@ glm::mat4 Camera3D::getPers(int width, int height)
 
 glm::mat4 Camera3D::getView()
 {
-	return glm::lookAt(this->pos, this->lookPoint, this->topVec);
+	return glm::lookAt(this->pos, this->lookDir + this->pos, this->topVec);
 }
 
 void Camera3D::changeZoom(float inc)
@@ -63,7 +66,7 @@ void Camera3D::rotateFunc(int width, int height)
 		if (cameraType == SURROUNDER) {
 			surrounderCamera(diffx, diffy);
 		}
-		else if (cameraType == WALKER) {
+		else if (cameraType == WALKER || cameraType == THIRD_PERSON) {
 			walkerCamera(diffx, diffy);
 		}
 	}
@@ -129,8 +132,46 @@ glm::vec3 Camera3D::rotatePoint(glm::vec3 point, glm::vec3 rotAngles)
 	return glm::vec3(v);
 }
 
+void Camera3D::updateLookDir() {
+	glm::vec3 lookDirection = glm::vec3(0, 0, -1);
+	this->lookDir = glm::normalize(rotatePoint(lookDirection, this->rot));
+}
 void Camera3D::updatePos()
 {
+	controlRotation();
+	if (cameraType == SURROUNDER) {
+		
+		glm::vec3 basePos = glm::vec3(0, 0, this->dist);
+		glm::vec3 baseTop = this->topVec;
+
+		basePos = this->rotatePoint(basePos, this->rot);
+		baseTop = this->rotatePoint(topVec, this->rot);
+
+		this->pos.x = basePos.x;
+		this->pos.y = basePos.y;
+		this->pos.z = basePos.z;
+	}
+	else if (cameraType == WALKER || cameraType == THIRD_PERSON) {
+		updateTrdPos();
+		updateLookDir();
+	}
+}
+
+void Camera3D::updateTrdPos()
+{
+	if (cameraType == THIRD_PERSON) {
+		SmartThing* s = (SmartThing*)this->atachedThing;
+		Vector3 pos = s->rb->getWorldPoint(Vector3(0, s->camHeight * (s->size->y / 2), 0));
+		this->pos.x = pos.x;
+		this->pos.y = pos.y;
+		this->pos.z = pos.z;
+	}
+	else {
+		return;
+	}
+}
+
+void Camera3D::controlRotation() {
 	if (rot.x > glm::pi<float>())
 	{
 		rot.x -= glm::pi<float>() * 2;
@@ -147,22 +188,16 @@ void Camera3D::updatePos()
 	else {
 		this->topVec.y = +1;
 	}
+}
 
-	if (cameraType == SURROUNDER) {
-		
-		glm::vec3 basePos = glm::vec3(0, 0, this->dist);
-		glm::vec3 baseTop = this->topVec;
+void Camera3D::atachBody(void* st)
+{
+	this->atachedThing = st;
+	this->cameraType = THIRD_PERSON;
+}
 
-		basePos = this->rotatePoint(basePos, this->rot);
-		baseTop = this->rotatePoint(topVec, this->rot);
-
-		this->pos.x = basePos.x;
-		this->pos.y = basePos.y;
-		this->pos.z = basePos.z;
-	}
-	else if (cameraType == WALKER) {
-		glm::vec3 lookDirection = glm::vec3(0, 0, -1);
-
-		this->lookPoint = glm::normalize(rotatePoint(lookDirection, this->rot)) + this->pos;
-	}
+void Camera3D::detachBody() 
+{
+	this->atachedThing = NULL;
+	this->cameraType = WALKER;
 }

@@ -9,6 +9,7 @@
 
 #define WALKER 1
 #define SURROUNDER 2
+#define THIRD_PERSON 3
 
 class Camera3D
 {
@@ -23,7 +24,7 @@ public:
 
 	glm::vec2* lastMouse = NULL;
 
-	glm::vec3 lookPoint = glm::vec3(0, 0, 0);
+	glm::vec3 lookDir = glm::vec3(0, 0, 0);
 	glm::vec3 topVec = glm::vec3(0, 1, 0);
 	float dist = 20;
 	glm::vec3 coordinateSystem[3] =
@@ -33,10 +34,13 @@ public:
 		glm::vec3(0, 0, 1)
 	};
 
-	int cameraType = SURROUNDER;
+	void* atachedThing = NULL;
+
+	int cameraType = WALKER;
 	glm::vec2 dragAdd = glm::vec2(0, 0);
 	int* mouseData;
-	Camera3D(glm::vec3 pos, int* mouseData, GLFWwindow* window);
+	int* keyData;
+	Camera3D(glm::vec3 pos, int* mouseData, int* keyData, GLFWwindow* window);
 	void update();
 
 	glm::mat4 getPers(int width, int height);
@@ -44,10 +48,16 @@ public:
 	void changeZoom(float inc);
 	float limitZoom(float inZoom);
 	void rotateFunc(int width, int height);
+	void keyControl();
 	void surrounderCamera(int diffx, int diffy);
 	void walkerCamera(int diffx, int diffy);
 	void cursorOutFunc(int width, int height);
 	glm::vec3 rotatePoint(glm::vec3 point, glm::vec3 rotAngles);
+	void updateLookDir();
 	void updatePos();
+	void updateTrdPos();
+	void controlRotation();
+	void atachBody(void* st);
+	void detachBody();
 };
 

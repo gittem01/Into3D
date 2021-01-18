@@ -31,6 +31,7 @@ void Boxy::update(Camera3D* cam) {
 
 	this->shader->setVec3("lightPos", cam->pos.x, cam->pos.y, cam->pos.z);
 	this->shader->setVec3("lightColor", 1, 1, 1);
+	this->shader->setVec3("objColor", color->x, color->y, color->z);
 
 	glBindVertexArray(this->VAO);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -38,16 +39,19 @@ void Boxy::update(Camera3D* cam) {
 
 void Boxy::createRigidBody(BodyType bType, PhysicsCommon* pc, PhysicsWorld* world)
 {
-	BoxShape* boxShape2 = pc->createBoxShape(Vector3(size->x/2, size->y/2, size->z/2));
+	BoxShape* boxShape = pc->createBoxShape(Vector3(size->x/2, size->y/2, size->z/2));
+	Quaternion orientation = Quaternion::fromEulerAngles(Vector3(rotation->x, rotation->y, rotation->z));
+	Transform transform = Transform(Vector3(pos->x, pos->y, pos->z), orientation);
 	
-	Quaternion orientation2 = Quaternion::fromEulerAngles(Vector3(rotation->x, rotation->y, rotation->z));
-	Transform transform2 = Transform(Vector3(pos->x, pos->y, pos->z), orientation2);
-
-	this->rb = world->createRigidBody(transform2);
-	rb->addCollider(boxShape2, Transform::identity());
+	this->rb = world->createRigidBody(transform);
+	rb->addCollider(boxShape, Transform::identity());
 	rb->setType(bType);
+	Collider* c = rb->getCollider(0);
+	Material& m = c->getMaterial();
+	m.setBounciness(0);
+	m.setFrictionCoefficient(1);
+	m.setMassDensity(100);
 }
-
 
 glm::mat4 Boxy::getModel() {
 

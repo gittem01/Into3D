@@ -7,6 +7,7 @@
 #include "Camera3D.h"
 #include <vector>
 #include <reactphysics3d/reactphysics3d.h>
+#include <reactphysics3d/engine/Material.h>
 
 using namespace reactphysics3d;
 

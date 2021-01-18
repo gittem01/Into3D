@@ -60,12 +60,18 @@
     <ClCompile Include="Camera3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SmartThing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Boxy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Camera3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartThing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
