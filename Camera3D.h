@@ -9,7 +9,7 @@
 
 #define WALKER 1
 #define SURROUNDER 2
-#define THIRD_PERSON 3
+#define FIRST_PERSON 3
 
 class Camera3D
 {
@@ -18,15 +18,19 @@ public:
 	glm::vec3 rot;
 	GLFWwindow* window;
 	float zoom = 1;
+	float freeSpeed = 0.1f;
+
+	int w, h; // Screen Sizes
 
 	glm::vec2 zoomLimits = glm::vec2(0.5, 3);
 	glm::mat4 pers;
 
 	glm::vec2* lastMouse = NULL;
 
-	glm::vec3 lookDir = glm::vec3(0, 0, 0);
+	glm::vec3 lookPos = glm::vec3(0, 0, 0);
+	glm::vec3 lookDir = glm::vec3(0, 0, -1);
 	glm::vec3 topVec = glm::vec3(0, 1, 0);
-	float dist = 20;
+	float dist = 10;
 	glm::vec3 coordinateSystem[3] =
 	{
 		glm::vec3(1, 0, 0),
@@ -44,7 +48,7 @@ public:
 	void update();
 
 	glm::mat4 getPers(int width, int height);
-	glm::mat4 getView();
+	glm::mat4 getView(bool posIncl);
 	void changeZoom(float inc);
 	float limitZoom(float inZoom);
 	void rotateFunc(int width, int height);
@@ -53,9 +57,11 @@ public:
 	void walkerCamera(int diffx, int diffy);
 	void cursorOutFunc(int width, int height);
 	glm::vec3 rotatePoint(glm::vec3 point, glm::vec3 rotAngles);
+	glm::vec3 rotatePointArround(glm::vec3 point, glm::vec3 arroundPoint, glm::vec3 rotAngles);
 	void updateLookDir();
 	void updatePos();
-	void updateTrdPos();
+	void updateWlkrPos();
+	void updateFrstPos();
 	void controlRotation();
 	void atachBody(void* st);
 	void detachBody();

@@ -1,20 +1,20 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <WindowPainter.h>
-#include <Camera.h>
+#include "WindowPainter.h"
 #include "SmartThing.h"
 #include <stdlib.h>
 #include <iostream>
 #include <time.h>
+#include "Sky.h"
 
 using namespace reactphysics3d;
 
 int main()
 {
 	srand(time(0));
-	WindowPainter* p = new WindowPainter(0);
-	Camera* cam = new Camera(glm::vec2(0, 0), p->mouseData, p->window);
-	p->cam = cam;
+	WindowPainter* p = new WindowPainter();
+
+	Sky* sky = new Sky();
 
 	int n = 10;
 	Boxy** boxes = (Boxy**)malloc(n * sizeof(Boxy*));
@@ -46,6 +46,7 @@ int main()
 	st->createRigidBody(BodyType::DYNAMIC, physicsCommon, world);
 	SmartThing::activatedThing = st;
 	//cam3D->atachBody(st);
+	cam3D->cameraType = WALKER;
 
 	while ( !glfwWindowShouldClose( p->window ))
 	{
@@ -55,9 +56,9 @@ int main()
 		}
 		b2->update(cam3D);
 		st->update(cam3D);
+		sky->update(cam3D);
 		world->update(timeStep);
 		p->looper();
-		cam->update();
 		cam3D->update();
 	}
 

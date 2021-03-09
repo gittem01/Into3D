@@ -23,10 +23,10 @@ void SmartThing::update(Camera3D* cam) {
 	rb->setTransform(t);
 
 
-	if (cam->atachedThing != this) {
+	if (cam->atachedThing != this || cam->cameraType != FIRST_PERSON) {
 		this->shader->use();
 		glm::mat4 pers = cam->pers;
-		glm::mat4 view = cam->getView();
+		glm::mat4 view = cam->getView(true);
 		glm::mat4 model = this->getModel();
 		glm::mat4 rot = this->getRotation();
 

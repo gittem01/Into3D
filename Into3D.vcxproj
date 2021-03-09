@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\dev\mines;C:\dev\GLAD\include;C:\dev\GLFW\include;C:\dev\imgui;C:\dev\reactphysics3d\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\dev\GLAD\include;C:\dev\GLFW\include;C:\dev\imgui;C:\dev\reactphysics3d\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\dev\GLFW\libs;C:\dev\reactphysics3d\build\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,18 +150,21 @@
     <ClCompile Include="..\..\..\..\..\dev\imgui\resources\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\..\..\..\..\dev\imgui\resources\imgui_impl_win32.cpp" />
     <ClCompile Include="..\..\..\..\..\dev\imgui\resources\imgui_widgets.cpp" />
-    <ClCompile Include="..\..\..\..\..\dev\mines\Camera.cpp" />
-    <ClCompile Include="..\..\..\..\..\dev\mines\Shader.cpp" />
-    <ClCompile Include="..\..\..\..\..\dev\mines\WindowPainter.cpp" />
     <ClCompile Include="Boxy.cpp" />
     <ClCompile Include="Camera3D.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Sky.cpp" />
     <ClCompile Include="SmartThing.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="WindowPainter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Boxy.h" />
     <ClInclude Include="Camera3D.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Sky.h" />
     <ClInclude Include="SmartThing.h" />
+    <ClInclude Include="WindowPainter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="defaultShaders\fragmentShader.frag" />

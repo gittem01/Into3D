@@ -20,7 +20,7 @@ void Boxy::update(Camera3D* cam) {
 
 	this->shader->use();
 	glm::mat4 pers = cam->pers;
-	glm::mat4 view = cam->getView();
+	glm::mat4 view = cam->getView(true);
 	glm::mat4 model = this->getModel();
 	glm::mat4 rot = this->getRotation();
 
