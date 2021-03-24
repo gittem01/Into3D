@@ -8,7 +8,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/glfw)
 file(GLOB IMGUI_HEADERS "${CMAKE_SOURCE_DIR}/external/imgui/include/*")
 file(GLOB IMGUI_SOURCES "${CMAKE_SOURCE_DIR}/external/imgui/src/*")
 
-set (CMAKE_CXX_STANDARD 17)
+set (CMAKE_CXX_STANDARD 14)
 
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/includes") # self resources
 set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/resources")
