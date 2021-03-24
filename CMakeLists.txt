@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.16.3)
 project(OpGLProj VERSION 1.0.0)
 
-add_definitions(-D _GLFW_WIN32)
-
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/ReactPhysics3D)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/glfw)
