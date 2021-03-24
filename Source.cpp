@@ -26,7 +26,6 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_MULTISAMPLE);
 
-
 	const float timeStep = 1.0f / 60.0f;
 	PhysicsCommon* physicsCommon = new PhysicsCommon();
 	PhysicsWorld* world = physicsCommon->createPhysicsWorld();

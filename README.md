@@ -1,20 +1,22 @@
-# Into3D
+## Steps:
+- Open command line in project path
+- ```mkdir build```
+- ```cd build```
+- ```cmake ..```
+- Open ```OpGLProj.sln``` file and build the solution
+- ```.exe``` file will be created inside Debug or Release folder
 
-## Ranking matters
-# Future plans (maybe):
-- add vulkan support (when finished learning vulkan)
-- add terrain (with physics)
-- add model loading (glTF will be used most likely)
+## Future plans:
+- add vulkan support
+- add terrain
+- add model loading
 - android support (optional)
 
 
-### libraries are not included with the repository user must download and link them by her/him self
+## Other requirements:
+- Visual Studio
+- CMake
 
-# Required libraries:
+##
 
-- glfw
-- glm
-- reactphysics3d
-- imgui
-
-Nothing is fully tested. Half of the classes are taken from my other project classes so there are lots of unnecessary code arround.
+Nothing is fully tested. Half of the classes are taken from my other project classes so there are lots of unnecessary code arround
