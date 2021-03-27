@@ -3,10 +3,9 @@ project(OpGLProj VERSION 1.0.0)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/ReactPhysics3D)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/glfw)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/imgui)
 
-file(GLOB IMGUI_HEADERS "${CMAKE_SOURCE_DIR}/external/imgui/include/*")
-file(GLOB IMGUI_SOURCES "${CMAKE_SOURCE_DIR}/external/imgui/src/*")
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/glfw)
 
 set (CMAKE_CXX_STANDARD 14)
 
@@ -15,7 +14,7 @@ set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/resources")
 
 set(GLAD_DIR "${CMAKE_SOURCE_DIR}/external/glad")
 
-set(ALL_INCLUDES WindowPainter SmartThing Sky Shader Camera3D Boxy)
+set(ALL_INCLUDES SmartThing Sky WindowPainter Shader Camera3D Boxy)
 
 set(i 0)
 foreach(n IN LISTS REACTPHYSICS3D_HEADERS)
@@ -34,13 +33,12 @@ foreach(n IN LISTS ALL_INCLUDES)
 endforeach()
 
 add_library(glad 
-            ${GLAD_DIR}/include/glad/glad.h 
             ${GLAD_DIR}/src/glad.c
 )
 
 add_library(imgui
-            ${IMGUI_HEADERS}
             ${IMGUI_SOURCES}
+            ${IMGUI_HEADERS}
 )
 
 add_library(ReactPhysics3D 
@@ -56,16 +54,25 @@ include_directories(${CMAKE_SOURCE_DIR}/external/glfw/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/ReactPhysics3D/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/imgui/include)
 
-add_executable(OpGL Source.cpp)
+set(srcs    ${CMAKE_SOURCE_DIR}/external/imgui/src/imgui_impl_glfw.cpp 
+            ${CMAKE_SOURCE_DIR}/external/imgui/include/imgui_impl_glfw.h 
+            ${CMAKE_SOURCE_DIR}/external/imgui/src/imgui_impl_opengl3.cpp 
+            ${CMAKE_SOURCE_DIR}/external/imgui/include/imgui_impl_opengl3.h 
+            Source.cpp)
 
-target_link_libraries(OpGL PUBLIC ReactPhysics3D)
+add_executable(OpGL ${srcs})
 
-target_link_libraries(OpGL PUBLIC opengl32.lib)
-target_link_libraries(OpGL PUBLIC glfw)
-target_link_libraries(OpGL PUBLIC glad)
-target_link_libraries(OpGL PUBLIC imgui)
+target_link_libraries(OpGL ReactPhysics3D)
+
+find_package(OpenGL REQUIRED)
+target_link_libraries(OpGL OpenGL::GL)
+
+target_link_libraries(OpGL imgui)
+target_link_libraries(OpGL glad)
+target_link_libraries(OpGL glfw ${GLFW_LIBRARIES})
 
 foreach(n IN LISTS ALL_INCLUDES)
-    target_link_libraries(OpGL PUBLIC ${n})
+    target_link_libraries(OpGL ${n})
     target_compile_definitions(${n} PUBLIC BASE_DIR="${CMAKE_SOURCE_DIR}")
 endforeach()
+

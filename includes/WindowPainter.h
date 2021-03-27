@@ -2,13 +2,12 @@
 
 #include <glad/glad.h>
 #include <glfw3.h>
+#include <imgui.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_glfw.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-#include <imgui_impl_win32.h>
 #include <glm/glm.hpp>
 
 class WindowPainter
@@ -20,20 +19,7 @@ public:
 	int* lastMousePos = (int*)calloc(2, sizeof(int));
 	glm::vec2 lastWinPos, lastWinSize;
 	GLFWwindow* window;
-	float currentColor[4] = {1, 1, 1, 1};
-	float currentDepth = 0;
-	bool isPicking, drawMode, grid;
-	const char* tripletDist[8] = { "2", "3", "4", "5", "6", "7", "8", "9" };
-	float bounciness = 0.2f;
-	int tripletNum = 0;
-	int numOfTriplets = 0;
-	int timeStep = 60;
-	int posIteration = 10;
-	int velocityIteration = 10;
-	bool enableGravity = false;
-	bool showLines = true;
 	bool fullScreen = false;
-	bool isClear = false;
 
 	WindowPainter();
 

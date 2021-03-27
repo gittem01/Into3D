@@ -71,33 +71,6 @@ void WindowPainter::imRender() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-    //
-    // Related with some other project
-    //
-
-    //ImGui::ColorEdit4("Color", this->currentColor); 
-    //ImGui::SliderFloat("Depth", &currentDepth, 0, 255, "%.0f", 1);
-    //ImGui::SliderFloat("Camera drag smoothness", nullptr, 0.1f, 1, "%.3f", 1);
-    //ImGui::SliderFloat("Camera zoom smoothness", nullptr, 0.1f, 1, "%.3f", 1);
-    //ImGui::SliderInt("Physic iteration per frame", &posIteration, 1, 50);
-    //ImGui::SliderInt("Velocity iteration per frame", &velocityIteration, 1, 50);
-    //ImGui::SliderInt("Time steps per frame (1/timestep)", &timeStep, 30, 240);
-    //ImGui::SliderFloat("Ball bounciness", &bounciness, 0.0f, 1, "%.3f", 1);
-    //ImGui::Combo("Triplet Distance", &tripletNum, tripletDist, IM_ARRAYSIZE(tripletDist));
-    //ImGui::Text("Number of triplets: %d", numOfTriplets);
-    //ImGui::Checkbox("Enable gravity", &enableGravity);
-    //ImGui::Checkbox("Show lines", &showLines);
-    //ImGui::Checkbox("Full screen", &fullScreen);
-    
-    //
-    // Related with some other project
-    //
-    /*if (ImGui::Button("Clear")) {
-        isClear = true;
-    }
-    else {
-        isClear = false;
-    }*/
 
     ImGui::BeginTabBar("Info");
     ImGui::TextWrapped("Camera movement in WALKER camera mode:\n"
@@ -107,9 +80,6 @@ void WindowPainter::imRender() {
         "WASD movement space jump");
     ImGui::EndTabBar();
 
-    //ImGui::Checkbox("Picker", &isPicking);
-    //ImGui::Checkbox("Draw Mode", &drawMode);
-    //ImGui::Checkbox("Grid", &grid);
     ImGui::Render();
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
