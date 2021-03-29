@@ -26,21 +26,6 @@ void WindowPainter::looper() {
     glfwGetWindowSize(window, &x, &y);
     glfwGetWindowPos(window, &xpos, &ypos);
 
-    if (fullScreen) {
-        glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), xpos, ypos, 1920, 1080, 60);
-        glViewport(0, 0, 1920, 1080);
-    }
-    else{
-        if (x == 1920 && y == 1080) {
-            x = 1600; y = 900;
-        }
-        if (xpos == 0 && ypos == 0) {
-            xpos = 160; ypos = 90;
-        }
-        glfwSetWindowMonitor(window, 0, xpos, ypos, x, y, 60);
-        glViewport(0, 0, x, y);
-    }
-
     this->clearMouseData();
     lastMousePos[0] = mouseData[0];
     lastMousePos[1] = mouseData[1];
@@ -72,13 +57,20 @@ void WindowPainter::imRender() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    ImGui::Checkbox("Enable Gravity", &enableGravity);
+
+    ImGui::Combo("Camera Type", &current_pos, cameraTypes, 3, IM_ARRAYSIZE(cameraTypes));
+
     ImGui::BeginTabBar("Info");
+
     ImGui::TextWrapped("Camera movement in WALKER camera mode:\n"
         "WASD are same as any other game q : camera up, e : camera down\n"
         "shift slows the camera down, ctrl speeds up\n"
         "third and first person modes are same as any other game\n"
         "WASD movement space jump");
+
     ImGui::EndTabBar();
+
 
     ImGui::Render();
 

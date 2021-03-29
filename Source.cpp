@@ -9,6 +9,8 @@
 
 using namespace reactphysics3d;
 
+const Vector3 gravity = Vector3(0, -9.81f, 0);
+
 int main()
 {
 	srand(time(0));
@@ -44,8 +46,8 @@ int main()
 	SmartThing* st = new SmartThing(glm::vec3(0, 15, 0), glm::vec3(1, 1, 1));
 	st->createRigidBody(BodyType::DYNAMIC, physicsCommon, world);
 	SmartThing::activatedThing = st;
-	//cam3D->atachBody(st);
-	cam3D->cameraType = WALKER;
+
+	cam3D->cameraType = p->current_pos + 1;
 
 	while ( !glfwWindowShouldClose( p->window ))
 	{
@@ -57,6 +59,20 @@ int main()
 		st->update(cam3D);
 		sky->update(cam3D);
 		world->update(timeStep);
+		if (p->enableGravity) {
+			world->setGravity(gravity);
+		}
+		else {
+			world->setGravity(Vector3(0, 0, 0));
+		}
+		if (p->current_pos > 0) {
+			cam3D->atachBody(st);
+			cam3D->cameraType = p->current_pos + 1;
+		}
+		else {
+			cam3D->detachBody();
+			cam3D->cameraType = 1;
+		}
 		p->looper();
 		cam3D->update();
 	}

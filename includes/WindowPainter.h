@@ -19,7 +19,9 @@ public:
 	int* lastMousePos = (int*)calloc(2, sizeof(int));
 	glm::vec2 lastWinPos, lastWinSize;
 	GLFWwindow* window;
-	bool fullScreen = false;
+	bool enableGravity = true;
+	const char* cameraTypes[3] = { "WALKER", "THIRD", "FIRST" };
+	int current_pos = 0;
 
 	WindowPainter();
 
