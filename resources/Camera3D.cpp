@@ -78,13 +78,13 @@ void Camera3D::rotateFunc(int width, int height)
 		float diffx, diffy;
 
 		if (cameraType == SURROUNDER) {
-			diffx = (wp->smoothMousePos[0] + dragAdd.x) - lastMouse->x;
-			diffy = -(wp->smoothMousePos[1] + dragAdd.y) + lastMouse->y;
+			diffx = (wp->smoothMousePos[0]) - lastMouse->x;
+			diffy = -(wp->smoothMousePos[1]) + lastMouse->y;
 			surrounderCamera(diffx, diffy);
 		}
 		else if (cameraType == WALKER || cameraType == FIRST_PERSON) {
-			diffx = (wp->smoothMousePos[0] + dragAdd.x) - lastMouse->x;
-			diffy = (wp->smoothMousePos[1] + dragAdd.y) - lastMouse->y;
+			diffx = (wp->smoothMousePos[0]) - lastMouse->x;
+			diffy = (wp->smoothMousePos[1]) - lastMouse->y;
 			walkerCamera(diffx, diffy);
 		}
 	}
@@ -96,12 +96,11 @@ void Camera3D::rotateFunc(int width, int height)
 	{
 		free(this->lastMouse);
 		this->lastMouse = NULL;
-		this->dragAdd.x = 0; this->dragAdd.y = 0;
 	}
 	else if (lastMouse) {
-		this->lastMouse->x = this->wp->smoothMousePos[0] + dragAdd.x;
-		this->lastMouse->y = this->wp->smoothMousePos[1] + dragAdd.y;
-		//cursorOutFunc(width, height);
+		this->lastMouse->x = this->wp->smoothMousePos[0];
+		this->lastMouse->y = this->wp->smoothMousePos[1];
+		cursorOutFunc(width, height);
 	}
 }
 
@@ -120,20 +119,20 @@ void Camera3D::walkerCamera(float diffx, float diffy)
 void Camera3D::cursorOutFunc(int width, int height) {
 	if (this->wp->mouseData[0] > width - 2) {
 		glfwSetCursorPos(window, 2, this->wp->mouseData[1]);
-		this->dragAdd.x += width;
+		this->wp->smoothMouseDiff[0] += width;
 	}
 	else if (this->wp->mouseData[0] < 1) {
 		glfwSetCursorPos(window, width - 2, this->wp->mouseData[1]);
-		this->dragAdd.x -= width;
+		this->wp->smoothMouseDiff[0] -= width;
 	}
 
 	if (this->wp->mouseData[1] > height - 2) {
 		glfwSetCursorPos(window, this->wp->mouseData[0], 2);
-		this->dragAdd.y += height;
+		this->wp->smoothMouseDiff[1] += height;
 	}
 	else if (this->wp->mouseData[1] < 1) {
 		glfwSetCursorPos(window, this->wp->mouseData[0], height - 2);
-		this->dragAdd.y -= height;
+		this->wp->smoothMouseDiff[1] -= height;
 	}
 }
 
