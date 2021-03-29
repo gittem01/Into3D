@@ -23,7 +23,7 @@ int main()
 
 	Boxy* b2 = new Boxy(glm::vec3(0, -5, 0), glm::vec3(100, 1, 100));
 
-	Camera3D* cam3D = new Camera3D(glm::vec3(0, 0, 10), p->mouseData, p->keyData, p->window);
+	Camera3D* cam3D = new Camera3D(glm::vec3(0, 0, 10), p);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_MULTISAMPLE);

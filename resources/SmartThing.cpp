@@ -54,30 +54,30 @@ void SmartThing::keyControl(Camera3D* cam)
 
 	if (SmartThing::activatedThing == this && cam->atachedThing == this) 
 	{
-		if (cam->keyData[GLFW_KEY_W])
+		if (cam->wp->keyData[GLFW_KEY_W])
 		{
 			finalSpeed.x += speed * dirVec.x;
 			finalSpeed.z += speed * dirVec.y;
 		}
 
-		if (cam->keyData[GLFW_KEY_S])
+		if (cam->wp->keyData[GLFW_KEY_S])
 		{
 			finalSpeed.x -= speed * dirVec.x;
 			finalSpeed.z -= speed * dirVec.y;
 		}
 
-		if (cam->keyData[GLFW_KEY_A])
+		if (cam->wp->keyData[GLFW_KEY_A])
 		{
 			finalSpeed.x -= speed * dirVecTan.x;
 			finalSpeed.z -= speed * dirVecTan.y;
 		}
 
-		if (cam->keyData[GLFW_KEY_D])
+		if (cam->wp->keyData[GLFW_KEY_D])
 		{
 			finalSpeed.x += speed * dirVecTan.x;
 			finalSpeed.z += speed * dirVecTan.y;
 		}
-		if (cam->keyData[GLFW_KEY_SPACE] && smartStatus == GROUNDED) {
+		if (cam->wp->keyData[GLFW_KEY_SPACE] && smartStatus == GROUNDED) {
 			finalSpeed.y = jumpSpeed;
 		}
 		Vector3 vel = this->rb->getLinearVelocity();

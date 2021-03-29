@@ -3,12 +3,11 @@
 #include "Camera3D.h"
 #include "SmartThing.h"
 
-Camera3D::Camera3D(glm::vec3 pos, int* mouseData, int* keyData, GLFWwindow* window) {
+Camera3D::Camera3D(glm::vec3 pos, WindowPainter* wp) {
 	this->pos = pos;
 	this->rot = glm::vec3(0, 0, 0);
-	this->mouseData = mouseData;
-	this->keyData = keyData;
-	this->window = window;
+	this->wp = wp;
+	this->window = wp->window;
 
 	int width, height;
 	glfwGetWindowSize(this->window, &width, &height);
@@ -64,9 +63,9 @@ void Camera3D::update() {
 	this->w = width; this->h = height;
 	this->pers = this->getPers(width, height);
 
-	if (this->mouseData[5] != 0)
+	if (this->wp->smoothMousePos[2] != 0)
 	{
-		this->changeZoom(0.1f * this->mouseData[5]);
+		this->changeZoom(0.1f * this->wp->smoothMousePos[2]);
 	}
 	this->rotateFunc(width, height);
 	this->updatePos();
@@ -74,66 +73,66 @@ void Camera3D::update() {
 
 void Camera3D::rotateFunc(int width, int height)
 {
-	if (this->mouseData[3] && this->lastMouse)
+	if (this->wp->mouseData[3] && this->lastMouse)
 	{
-		int diffx, diffy;
+		float diffx, diffy;
 
 		if (cameraType == SURROUNDER) {
-			diffx = (mouseData[0] + dragAdd.x) - lastMouse->x;
-			diffy = -(mouseData[1] + dragAdd.y) + lastMouse->y;
+			diffx = (wp->smoothMousePos[0] + dragAdd.x) - lastMouse->x;
+			diffy = -(wp->smoothMousePos[1] + dragAdd.y) + lastMouse->y;
 			surrounderCamera(diffx, diffy);
 		}
 		else if (cameraType == WALKER || cameraType == FIRST_PERSON) {
-			diffx = (mouseData[0] + dragAdd.x) - lastMouse->x;
-			diffy = (mouseData[1] + dragAdd.y) - lastMouse->y;
+			diffx = (wp->smoothMousePos[0] + dragAdd.x) - lastMouse->x;
+			diffy = (wp->smoothMousePos[1] + dragAdd.y) - lastMouse->y;
 			walkerCamera(diffx, diffy);
 		}
 	}
-	if (!lastMouse && mouseData[3])
+	if (!lastMouse && wp->mouseData[3])
 	{
 		this->lastMouse = (glm::vec2*)malloc(1 * sizeof(glm::vec2));
 	}
-	if (!this->mouseData[3] && this->lastMouse)
+	if (!this->wp->mouseData[3] && this->lastMouse)
 	{
 		free(this->lastMouse);
 		this->lastMouse = NULL;
 		this->dragAdd.x = 0; this->dragAdd.y = 0;
 	}
 	else if (lastMouse) {
-		this->lastMouse->x = this->mouseData[0] + dragAdd.x;
-		this->lastMouse->y = this->mouseData[1] + dragAdd.y;
-		cursorOutFunc(width, height);
+		this->lastMouse->x = this->wp->smoothMousePos[0] + dragAdd.x;
+		this->lastMouse->y = this->wp->smoothMousePos[1] + dragAdd.y;
+		//cursorOutFunc(width, height);
 	}
 }
 
-void Camera3D::surrounderCamera(int diffx, int diffy)
+void Camera3D::surrounderCamera(float diffx, float diffy)
 {
 	this->rot.y += 0.01f * diffx;
 	this->rot.x -= 0.01f * diffy;
 }
 
-void Camera3D::walkerCamera(int diffx, int diffy)
+void Camera3D::walkerCamera(float diffx, float diffy)
 {
 	this->rot.y += 0.004f * diffx;
 	this->rot.x += 0.004f * diffy;
 }
 
 void Camera3D::cursorOutFunc(int width, int height) {
-	if (this->mouseData[0] > width - 2) {
-		glfwSetCursorPos(window, 2, this->mouseData[1]);
+	if (this->wp->mouseData[0] > width - 2) {
+		glfwSetCursorPos(window, 2, this->wp->mouseData[1]);
 		this->dragAdd.x += width;
 	}
-	else if (this->mouseData[0] < 1) {
-		glfwSetCursorPos(window, width - 2, this->mouseData[1]);
+	else if (this->wp->mouseData[0] < 1) {
+		glfwSetCursorPos(window, width - 2, this->wp->mouseData[1]);
 		this->dragAdd.x -= width;
 	}
 
-	if (this->mouseData[1] > height - 2) {
-		glfwSetCursorPos(window, this->mouseData[0], 2);
+	if (this->wp->mouseData[1] > height - 2) {
+		glfwSetCursorPos(window, this->wp->mouseData[0], 2);
 		this->dragAdd.y += height;
 	}
-	else if (this->mouseData[1] < 1) {
-		glfwSetCursorPos(window, this->mouseData[0], height - 2);
+	else if (this->wp->mouseData[1] < 1) {
+		glfwSetCursorPos(window, this->wp->mouseData[0], height - 2);
 		this->dragAdd.y -= height;
 	}
 }
@@ -222,41 +221,41 @@ void Camera3D::updateWlkrPos()
 	if (cameraType == WALKER) {
 		Vector3 speedAddition = Vector3(0, 0, 0);
 
-		if (keyData[GLFW_KEY_LEFT_CONTROL]) {
+		if (wp->keyData[GLFW_KEY_LEFT_CONTROL]) {
 			speedMult = 5.0f;
 		}
-		if (keyData[GLFW_KEY_LEFT_SHIFT]) {
+		if (wp->keyData[GLFW_KEY_LEFT_SHIFT]) {
 			speedMult = 0.2f;
 		}
 
-		if (keyData[GLFW_KEY_W]) {
+		if (wp->keyData[GLFW_KEY_W]) {
 			speedAddition.x += freeSpeed * lookDir.x;
 			speedAddition.y += freeSpeed * lookDir.y;
 			speedAddition.z += freeSpeed * lookDir.z;
 		}
 
-		if (keyData[GLFW_KEY_S]) {
+		if (wp->keyData[GLFW_KEY_S]) {
 			speedAddition.x -= freeSpeed * lookDir.x;
 			speedAddition.y -= freeSpeed * lookDir.y;
 			speedAddition.z -= freeSpeed * lookDir.z;
 		}
 
-		if (keyData[GLFW_KEY_A]) {
+		if (wp->keyData[GLFW_KEY_A]) {
 			speedAddition.x += freeSpeed * cameraRight.x;
 			speedAddition.y += freeSpeed * cameraRight.y;
 			speedAddition.z += freeSpeed * cameraRight.z;
 		}
 
-		if (keyData[GLFW_KEY_D]) {
+		if (wp->keyData[GLFW_KEY_D]) {
 			speedAddition.x -= freeSpeed * cameraRight.x;
 			speedAddition.y -= freeSpeed * cameraRight.y;
 			speedAddition.z -= freeSpeed * cameraRight.z;
 		}
 
-		if (keyData[GLFW_KEY_Q]) {
+		if (wp->keyData[GLFW_KEY_Q]) {
 			speedAddition.y += freeSpeed;
 		}
-		if (keyData[GLFW_KEY_E]) {
+		if (wp->keyData[GLFW_KEY_E]) {
 			speedAddition.y -= freeSpeed;
 		}
 

@@ -1,6 +1,8 @@
 #include "WindowPainter.h"
 
 WindowPainter::WindowPainter() {
+    smoothMousePos[0] = -1; smoothMousePos[1] = -1;
+    lastMousePos[0] = -1; lastMousePos[1] = -1;
     this->massInit();
     this->io = ImGui::GetIO();
 }
@@ -12,12 +14,7 @@ void WindowPainter::clearMouseData() {
             this->mouseData[i] = 1;
         }
     }
-    if (lastMousePos[0] == mouseData[0] && lastMousePos[1] == mouseData[1]) {
-        mouseData[6] = 0;
-    }
-    else {
-        mouseData[6] = 1;
-    }
+    smoothMousePos[2] = 0;
 }
 
 void WindowPainter::looper() { 
@@ -27,8 +24,6 @@ void WindowPainter::looper() {
     glfwGetWindowPos(window, &xpos, &ypos);
 
     this->clearMouseData();
-    lastMousePos[0] = mouseData[0];
-    lastMousePos[1] = mouseData[1];
 
     /* Render here */
     imRender();
@@ -36,7 +31,7 @@ void WindowPainter::looper() {
     for (int i = 0; i < 3; i++) {
         if (!io.MouseDownOwned[i]) {
             short pos = i + 2;
-            if (io.MouseClicked[i])
+            if (io.MouseClicked[i]) 
                 this->mouseData[pos] = 2;
             else if (io.MouseReleased[i])
                 this->mouseData[pos] = 0;
@@ -50,6 +45,16 @@ void WindowPainter::looper() {
 
     /* Poll for and process events */
     glfwPollEvents();
+
+    smoothMousePos[0] += smoothMouseDiff[0] * moveSmooth;
+    smoothMousePos[1] += smoothMouseDiff[1] * moveSmooth;
+    
+    smoothMousePos[2] += smoothMouseDiff[2] * scrollSmooth;
+
+    smoothMouseDiff[0] -= smoothMouseDiff[0] * moveSmooth;
+    smoothMouseDiff[1] -= smoothMouseDiff[1] * moveSmooth;
+
+    smoothMouseDiff[2] -= smoothMouseDiff[2] * scrollSmooth;
 }
 
 void WindowPainter::imRender() {
@@ -60,6 +65,9 @@ void WindowPainter::imRender() {
     ImGui::Checkbox("Enable Gravity", &enableGravity);
 
     ImGui::Combo("Camera Type", &current_pos, cameraTypes, 3, IM_ARRAYSIZE(cameraTypes));
+
+    ImGui::SliderFloat("Camera smoothness", &moveSmooth, 0.05f, 1.0f, "%.3f", 1.0f);
+    ImGui::SliderFloat("Scroll smoothness", &scrollSmooth, 0.05f, 1.0f, "%.3f", 1.0f);
 
     ImGui::BeginTabBar("Info");
 
@@ -125,15 +133,37 @@ void WindowPainter::mouseEventCallback(GLFWwindow* window, double xpos, double y
     WindowPainter* thisClass = (WindowPainter*)glfwGetWindowUserPointer(window);
     thisClass->mouseData[0] = (int)xpos;
     thisClass->mouseData[1] = (int)ypos;
+    
+    if (thisClass->smoothMousePos[0] == -1){
+        thisClass->smoothMousePos[0] = xpos;
+        thisClass->smoothMousePos[1] = ypos;
+    }
+
+    if (thisClass->lastMousePos[0] != -1){
+        thisClass->smoothMouseDiff[0] += xpos - thisClass->lastMousePos[0];
+        thisClass->smoothMouseDiff[1] += ypos - thisClass->lastMousePos[1];
+    }
+
+    thisClass->lastMousePos[0] = (int)xpos;
+    thisClass->lastMousePos[1] = (int)ypos;
 }
 
 void WindowPainter::buttonEventCallback(GLFWwindow* window, int button, int action, int mods) {
     WindowPainter* thisClass = (WindowPainter*)glfwGetWindowUserPointer(window);
+    
+    if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_RIGHT){
+        thisClass->smoothMousePos[0] = thisClass->mouseData[0];
+        thisClass->smoothMousePos[1] = thisClass->mouseData[1];
+
+        thisClass->smoothMouseDiff[0] = 0;
+        thisClass->smoothMouseDiff[1] = 0;
+    }
 }
 
 void WindowPainter::scrollEventCallback(GLFWwindow* window, double xoffset, double yoffset) {
     WindowPainter* thisClass = (WindowPainter*)glfwGetWindowUserPointer(window);
     thisClass->mouseData[5] = (int)yoffset;
+    thisClass->smoothMouseDiff[2] += yoffset;
 }
 
 void WindowPainter::glfwKeyEventCallback(GLFWwindow* window, int key, int scancode, int action, int mods)

@@ -6,6 +6,7 @@
 #include <glad/glad.h>
 #include <glfw3.h>
 #include <math.h>
+#include "WindowPainter.h"
 
 #define WALKER 1
 #define SURROUNDER 2
@@ -21,6 +22,7 @@ public:
 	float freeSpeed = 0.1f;
 
 	int w, h; // Screen Sizes
+	WindowPainter* wp;
 
 	glm::vec2 zoomLimits = glm::vec2(0.5, 3);
 	glm::mat4 pers;
@@ -42,9 +44,8 @@ public:
 
 	int cameraType = WALKER;
 	glm::vec2 dragAdd = glm::vec2(0, 0);
-	int* mouseData;
-	int* keyData;
-	Camera3D(glm::vec3 pos, int* mouseData, int* keyData, GLFWwindow* window);
+
+	Camera3D(glm::vec3 pos, WindowPainter* wp);
 	void update();
 
 	glm::mat4 getPers(int width, int height);
@@ -53,8 +54,8 @@ public:
 	float limitZoom(float inZoom);
 	void rotateFunc(int width, int height);
 	void keyControl();
-	void surrounderCamera(int diffx, int diffy);
-	void walkerCamera(int diffx, int diffy);
+	void surrounderCamera(float diffx, float diffy);
+	void walkerCamera(float diffx, float diffy);
 	void cursorOutFunc(int width, int height);
 	glm::vec3 rotatePoint(glm::vec3 point, glm::vec3 rotAngles);
 	glm::vec3 rotatePointArround(glm::vec3 point, glm::vec3 arroundPoint, glm::vec3 rotAngles);
