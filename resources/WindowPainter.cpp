@@ -25,8 +25,6 @@ void WindowPainter::looper() {
 
     this->clearMouseData();
 
-    imRender();
-
     for (int i = 0; i < 3; i++) {
         if (!io.MouseDownOwned[i]) {
             short pos = i + 2;
@@ -38,12 +36,14 @@ void WindowPainter::looper() {
         }
     }
 
-    for (char i=2; i<5; i++){
-        if (mouseData[i]){
-            cursorOutFunc(x, y);
-            break;
-        }
-    }
+    // for (char i=2; i<5; i++){
+    //     if (mouseData[i]){
+    //         cursorOutFunc(x, y);
+    //         break;
+    //     }
+    // }
+
+    imRender();
 
     glfwSwapInterval(1);
 
