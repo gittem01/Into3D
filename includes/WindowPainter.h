@@ -16,6 +16,8 @@ public:
 	int* mouseData = (int*)calloc(7, sizeof(int));
 	int* keyData = (int*)calloc(512, sizeof(int));
 
+	float cameraSpeed = 0.5f;
+	float cameraSensitivity = 0.5f;
 	float* smoothMousePos = (float*)calloc(3, sizeof(float));
 	float* smoothMouseDiff = (float*)calloc(3, sizeof(float)); // Mouse x, y, scroll diffs
 	float moveSmooth = 0.1f; float scrollSmooth = 0.1f;

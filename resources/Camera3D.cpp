@@ -73,7 +73,7 @@ void Camera3D::update() {
 
 void Camera3D::rotateFunc(int width, int height)
 {
-	if (this->wp->mouseData[3])
+	if (abs(wp->smoothDiff[0]) > 0 || abs(wp->smoothDiff[1]) > 0)
 	{
 		if (cameraType == SURROUNDER) {
 			surrounderCamera(wp->smoothDiff[0], -wp->smoothDiff[1]);
@@ -86,14 +86,14 @@ void Camera3D::rotateFunc(int width, int height)
 
 void Camera3D::surrounderCamera(float diffx, float diffy)
 {
-	this->rot.y += 0.01f * diffx;
-	this->rot.x -= 0.01f * diffy;
+	this->rot.y += 0.01f * diffx * wp->cameraSensitivity;
+	this->rot.x -= 0.01f * diffy * wp->cameraSensitivity;
 }
 
 void Camera3D::walkerCamera(float diffx, float diffy)
 {
-	this->rot.y += 0.004f * diffx;
-	this->rot.x += 0.004f * diffy;
+	this->rot.y += 0.004f * diffx * wp->cameraSensitivity;
+	this->rot.x += 0.004f * diffy * wp->cameraSensitivity;
 }
 
 glm::vec3 Camera3D::rotatePoint(glm::vec3 point, glm::vec3 rotAngles)
@@ -176,15 +176,15 @@ void Camera3D::keyControl() {
 void Camera3D::updateWlkrPos()
 {
 	glm::vec3 cameraRight = glm::normalize(glm::cross(topVec, this->lookDir));
-	float speedMult = 1;
+	float speedMult = wp->cameraSpeed;
 	if (cameraType == WALKER) {
 		Vector3 speedAddition = Vector3(0, 0, 0);
 
 		if (wp->keyData[GLFW_KEY_LEFT_CONTROL]) {
-			speedMult = 5.0f;
+			speedMult *= 5.0f;
 		}
 		if (wp->keyData[GLFW_KEY_LEFT_SHIFT]) {
-			speedMult = 0.2f;
+			speedMult *= 0.2f;
 		}
 
 		if (wp->keyData[GLFW_KEY_W]) {

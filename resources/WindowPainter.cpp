@@ -50,7 +50,7 @@ void WindowPainter::looper() {
     glfwSwapBuffers(window);
 
     glfwPollEvents();
-    
+
     smoothMousePos[0] += smoothMouseDiff[0] * moveSmooth;
     smoothMousePos[1] += smoothMouseDiff[1] * moveSmooth;
     
@@ -94,6 +94,8 @@ void WindowPainter::imRender() {
 
     ImGui::Combo("Camera Type", &current_pos, cameraTypes, 3, IM_ARRAYSIZE(cameraTypes));
 
+    ImGui::SliderFloat("Camera Speed", &cameraSpeed, 0.05f, 1.0f, "%.3f", 1.0f);
+    ImGui::SliderFloat("Camera Sensitivity", &cameraSensitivity, 0.05f, 1.0f, "%.3f", 1.0f);
     ImGui::SliderFloat("Camera smoothness", &moveSmooth, 0.05f, 1.0f, "%.3f", 1.0f);
     ImGui::SliderFloat("Scroll smoothness", &scrollSmooth, 0.05f, 1.0f, "%.3f", 1.0f);
 
@@ -167,7 +169,7 @@ void WindowPainter::mouseEventCallback(GLFWwindow* window, double xpos, double y
         thisClass->smoothMousePos[1] = ypos;
     }
 
-    if (thisClass->lastMousePos[0] != INT_MIN){
+    if (thisClass->mouseData[3] && thisClass->lastMousePos[0] != INT_MIN){
         thisClass->smoothMouseDiff[0] += xpos - thisClass->lastMousePos[0];
         thisClass->smoothMouseDiff[1] += ypos - thisClass->lastMousePos[1];
     }
