@@ -19,6 +19,7 @@ public:
 	float* smoothMousePos = (float*)calloc(3, sizeof(float));
 	float* smoothMouseDiff = (float*)calloc(3, sizeof(float)); // Mouse x, y, scroll diffs
 	float moveSmooth = 0.1f; float scrollSmooth = 0.1f;
+	float* smoothDiff = (float*)calloc(2, sizeof(float));
 
 	ImGuiIO io;
 	int* lastMousePos = (int*)calloc(2, sizeof(int));
@@ -32,6 +33,7 @@ public:
 
 	void massInit();
 	void looper();
+	void cursorOutFunc(int width, int height);
 	void clearMouseData();
 	void imRender();
 	static void mouseEventCallback(GLFWwindow*, double, double);

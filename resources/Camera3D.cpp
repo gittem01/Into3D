@@ -73,34 +73,14 @@ void Camera3D::update() {
 
 void Camera3D::rotateFunc(int width, int height)
 {
-	if (this->wp->mouseData[3] && this->lastMouse)
+	if (this->wp->mouseData[3])
 	{
-		float diffx, diffy;
-
 		if (cameraType == SURROUNDER) {
-			diffx = (wp->smoothMousePos[0]) - lastMouse->x;
-			diffy = -(wp->smoothMousePos[1]) + lastMouse->y;
-			surrounderCamera(diffx, diffy);
+			surrounderCamera(wp->smoothDiff[0], -wp->smoothDiff[1]);
 		}
 		else if (cameraType == WALKER || cameraType == FIRST_PERSON) {
-			diffx = (wp->smoothMousePos[0]) - lastMouse->x;
-			diffy = (wp->smoothMousePos[1]) - lastMouse->y;
-			walkerCamera(diffx, diffy);
+			walkerCamera(wp->smoothDiff[0], wp->smoothDiff[1]);
 		}
-	}
-	if (!lastMouse && wp->mouseData[3])
-	{
-		this->lastMouse = (glm::vec2*)malloc(1 * sizeof(glm::vec2));
-	}
-	if (!this->wp->mouseData[3] && this->lastMouse)
-	{
-		free(this->lastMouse);
-		this->lastMouse = NULL;
-	}
-	else if (lastMouse) {
-		this->lastMouse->x = this->wp->smoothMousePos[0];
-		this->lastMouse->y = this->wp->smoothMousePos[1];
-		cursorOutFunc(width, height);
 	}
 }
 
@@ -114,26 +94,6 @@ void Camera3D::walkerCamera(float diffx, float diffy)
 {
 	this->rot.y += 0.004f * diffx;
 	this->rot.x += 0.004f * diffy;
-}
-
-void Camera3D::cursorOutFunc(int width, int height) {
-	if (this->wp->mouseData[0] > width - 2) {
-		glfwSetCursorPos(window, 2, this->wp->mouseData[1]);
-		this->wp->smoothMouseDiff[0] += width;
-	}
-	else if (this->wp->mouseData[0] < 1) {
-		glfwSetCursorPos(window, width - 2, this->wp->mouseData[1]);
-		this->wp->smoothMouseDiff[0] -= width;
-	}
-
-	if (this->wp->mouseData[1] > height - 2) {
-		glfwSetCursorPos(window, this->wp->mouseData[0], 2);
-		this->wp->smoothMouseDiff[1] += height;
-	}
-	else if (this->wp->mouseData[1] < 1) {
-		glfwSetCursorPos(window, this->wp->mouseData[0], height - 2);
-		this->wp->smoothMouseDiff[1] -= height;
-	}
 }
 
 glm::vec3 Camera3D::rotatePoint(glm::vec3 point, glm::vec3 rotAngles)

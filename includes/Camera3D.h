@@ -27,12 +27,11 @@ public:
 	glm::vec2 zoomLimits = glm::vec2(0.5, 3);
 	glm::mat4 pers;
 
-	glm::vec2* lastMouse = NULL;
-
 	glm::vec3 lookPos = glm::vec3(0, 0, 0);
 	glm::vec3 lookDir = glm::vec3(0, 0, -1);
 	glm::vec3 topVec = glm::vec3(0, 1, 0);
 	float dist = 10;
+	
 	glm::vec3 coordinateSystem[3] =
 	{
 		glm::vec3(1, 0, 0),

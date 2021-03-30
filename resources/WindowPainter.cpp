@@ -1,8 +1,8 @@
 #include "WindowPainter.h"
 
 WindowPainter::WindowPainter() {
-    smoothMousePos[0] = -1; smoothMousePos[1] = -1;
-    lastMousePos[0] = -1; lastMousePos[1] = -1;
+    smoothMousePos[0] = INT_MIN; smoothMousePos[1] = INT_MIN;
+    lastMousePos[0] = INT_MIN; lastMousePos[1] = INT_MIN;
     this->massInit();
     this->io = ImGui::GetIO();
 }
@@ -25,36 +25,64 @@ void WindowPainter::looper() {
 
     this->clearMouseData();
 
-    /* Render here */
     imRender();
 
     for (int i = 0; i < 3; i++) {
         if (!io.MouseDownOwned[i]) {
             short pos = i + 2;
-            if (io.MouseClicked[i]) 
+            if (io.MouseClicked[i]){
                 this->mouseData[pos] = 2;
+            }
             else if (io.MouseReleased[i])
                 this->mouseData[pos] = 0;
         }
     }
-    
-    /* Swap front and back buffers */
+
+    for (char i=2; i<5; i++){
+        if (mouseData[i]){
+            cursorOutFunc(x, y);
+            break;
+        }
+    }
+
     glfwSwapInterval(1);
 
     glfwSwapBuffers(window);
 
-    /* Poll for and process events */
     glfwPollEvents();
-
+    
     smoothMousePos[0] += smoothMouseDiff[0] * moveSmooth;
     smoothMousePos[1] += smoothMouseDiff[1] * moveSmooth;
     
     smoothMousePos[2] += smoothMouseDiff[2] * scrollSmooth;
 
-    smoothMouseDiff[0] -= smoothMouseDiff[0] * moveSmooth;
-    smoothMouseDiff[1] -= smoothMouseDiff[1] * moveSmooth;
+    smoothDiff[0] = smoothMouseDiff[0] * moveSmooth;
+    smoothDiff[1] = smoothMouseDiff[1] * moveSmooth;
+
+    smoothMouseDiff[0] -= smoothDiff[0];
+    smoothMouseDiff[1] -= smoothDiff[1];
 
     smoothMouseDiff[2] -= smoothMouseDiff[2] * scrollSmooth;
+}
+
+void WindowPainter::cursorOutFunc(int width, int height) {
+	if (this->mouseData[0] > width - 3) {
+		glfwSetCursorPos(window, 2, this->mouseData[1]);
+		this->smoothMouseDiff[0] += width - 3;
+	}
+	else if (this->mouseData[0] < 2) {
+		glfwSetCursorPos(window, width - 3, this->mouseData[1]);
+		this->smoothMouseDiff[0] -= width - 3;
+	}
+
+	if (this->mouseData[1] > height - 3) {
+		glfwSetCursorPos(window, this->mouseData[0], 2);
+		this->smoothMouseDiff[1] += height - 3;
+	}
+	else if (this->mouseData[1] < 2) {
+		glfwSetCursorPos(window, this->mouseData[0], height - 3);
+		this->smoothMouseDiff[1] -= height - 3;
+	}
 }
 
 void WindowPainter::imRender() {
@@ -134,12 +162,12 @@ void WindowPainter::mouseEventCallback(GLFWwindow* window, double xpos, double y
     thisClass->mouseData[0] = (int)xpos;
     thisClass->mouseData[1] = (int)ypos;
     
-    if (thisClass->smoothMousePos[0] == -1){
+    if (thisClass->smoothMousePos[0] == INT_MIN){
         thisClass->smoothMousePos[0] = xpos;
         thisClass->smoothMousePos[1] = ypos;
     }
 
-    if (thisClass->lastMousePos[0] != -1){
+    if (thisClass->lastMousePos[0] != INT_MIN){
         thisClass->smoothMouseDiff[0] += xpos - thisClass->lastMousePos[0];
         thisClass->smoothMouseDiff[1] += ypos - thisClass->lastMousePos[1];
     }
