@@ -8,9 +8,11 @@
 #include <math.h>
 #include "WindowPainter.h"
 
-#define WALKER 1
-#define SURROUNDER 2
-#define FIRST_PERSON 3
+typedef enum CameraTypes {
+	WALKER = 1,
+	SURROUNDER = 2,
+	FIRST_PERSON = 3,
+}CameraTypes;
 
 class Camera3D
 {
@@ -23,6 +25,8 @@ public:
 
 	int w, h; // Screen Sizes
 	WindowPainter* wp;
+
+	glm::vec3 posAim = glm::vec3(0, 0, 0);
 
 	glm::vec2 zoomLimits = glm::vec2(0.5, 3);
 	glm::mat4 pers;
@@ -41,7 +45,7 @@ public:
 
 	void* atachedThing = NULL;
 
-	int cameraType = WALKER;
+	CameraTypes cameraType = WALKER;
 	glm::vec2 dragAdd = glm::vec2(0, 0);
 
 	Camera3D(glm::vec3 pos, WindowPainter* wp);
@@ -65,5 +69,6 @@ public:
 	void controlRotation();
 	void atachBody(void* st);
 	void detachBody();
+	void switchCameraMode(CameraTypes type);
 };
 

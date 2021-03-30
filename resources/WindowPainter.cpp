@@ -94,8 +94,9 @@ void WindowPainter::imRender() {
 
     ImGui::Combo("Camera Type", &current_pos, cameraTypes, 3, IM_ARRAYSIZE(cameraTypes));
 
-    ImGui::SliderFloat("Camera Speed", &cameraSpeed, 0.05f, 1.0f, "%.3f", 1.0f);
-    ImGui::SliderFloat("Camera Sensitivity", &cameraSensitivity, 0.05f, 1.0f, "%.3f", 1.0f);
+    ImGui::SliderFloat("Camera speed", &cameraSpeed, 0.05f, 1.0f, "%.3f", 1.0f);
+    ImGui::SliderFloat("Movement smoothness", &keySmoothness, 0.05f, 1.0f, "%.3f", 1.0f);
+    ImGui::SliderFloat("Camera sensitivity", &cameraSensitivity, 0.05f, 1.0f, "%.3f", 1.0f);
     ImGui::SliderFloat("Camera smoothness", &moveSmooth, 0.05f, 1.0f, "%.3f", 1.0f);
     ImGui::SliderFloat("Scroll smoothness", &scrollSmooth, 0.05f, 1.0f, "%.3f", 1.0f);
 

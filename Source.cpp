@@ -47,9 +47,9 @@ int main()
 	st->createRigidBody(BodyType::DYNAMIC, physicsCommon, world);
 	SmartThing::activatedThing = st;
 
-	cam3D->cameraType = p->current_pos + 1;
+	cam3D->cameraType = static_cast<CameraTypes>(p->current_pos + 1);
 
-	while ( !glfwWindowShouldClose( p->window ))
+	while (!glfwWindowShouldClose( p->window ))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (int i = 0; i < n; i++) {
@@ -67,11 +67,11 @@ int main()
 		}
 		if (p->current_pos > 0) {
 			cam3D->atachBody(st);
-			cam3D->cameraType = p->current_pos + 1;
+			cam3D->switchCameraMode(static_cast<CameraTypes>(p->current_pos + 1));
 		}
 		else {
 			cam3D->detachBody();
-			cam3D->cameraType = 1;
+			cam3D->switchCameraMode(CameraTypes::WALKER);
 		}
 		p->looper();
 		cam3D->update();

@@ -23,6 +23,8 @@ public:
 	float moveSmooth = 0.1f; float scrollSmooth = 0.1f;
 	float* smoothDiff = (float*)calloc(2, sizeof(float));
 
+	float keySmoothness = 0.5;
+
 	ImGuiIO io;
 	int* lastMousePos = (int*)calloc(2, sizeof(int));
 	glm::vec2 lastWinPos, lastWinSize;

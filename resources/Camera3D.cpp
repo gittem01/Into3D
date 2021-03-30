@@ -5,6 +5,7 @@
 
 Camera3D::Camera3D(glm::vec3 pos, WindowPainter* wp) {
 	this->pos = pos;
+	this->posAim = pos;
 	this->rot = glm::vec3(0, 0, 0);
 	this->wp = wp;
 	this->window = wp->window;
@@ -178,7 +179,7 @@ void Camera3D::updateWlkrPos()
 	glm::vec3 cameraRight = glm::normalize(glm::cross(topVec, this->lookDir));
 	float speedMult = wp->cameraSpeed;
 	if (cameraType == WALKER) {
-		Vector3 speedAddition = Vector3(0, 0, 0);
+		glm::vec3 speedAddition = glm::vec3(0, 0, 0);
 
 		if (wp->keyData[GLFW_KEY_LEFT_CONTROL]) {
 			speedMult *= 5.0f;
@@ -218,10 +219,10 @@ void Camera3D::updateWlkrPos()
 			speedAddition.y -= freeSpeed;
 		}
 
-
-		this->pos.x = pos.x + speedAddition.x * speedMult;
-		this->pos.y = pos.y + speedAddition.y * speedMult;
-		this->pos.z = pos.z + speedAddition.z * speedMult;
+		posAim += speedAddition * speedMult;
+		glm::vec3 diff = posAim * wp->keySmoothness;
+		pos += diff;
+		posAim -= diff;
 	}
 }
 
@@ -279,4 +280,9 @@ void Camera3D::detachBody()
 {
 	this->atachedThing = NULL;
 	this->cameraType = WALKER;
+}
+
+void Camera3D::switchCameraMode(CameraTypes type){
+	// TODO
+	cameraType = type;
 }
