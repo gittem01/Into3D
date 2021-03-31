@@ -19,11 +19,20 @@ void WindowPainter::clearMouseData() {
 
 void WindowPainter::looper() { 
     this->io = ImGui::GetIO();
-    int x, y, xpos, ypos;
+
+    int x, y;
     glfwGetWindowSize(window, &x, &y);
-    glfwGetWindowPos(window, &xpos, &ypos);
 
     this->clearMouseData();
+
+    // for (char i=2; i<5; i++){
+    //     if (mouseData[i]){
+    //         cursorOutFunc(x, y);
+    //         break;
+    //     }
+    // }
+
+    imRender();
 
     for (int i = 0; i < 3; i++) {
         if (!io.MouseDownOwned[i]) {
@@ -35,15 +44,6 @@ void WindowPainter::looper() {
                 this->mouseData[pos] = 0;
         }
     }
-
-    // for (char i=2; i<5; i++){
-    //     if (mouseData[i]){
-    //         cursorOutFunc(x, y);
-    //         break;
-    //     }
-    // }
-
-    imRender();
 
     glfwSwapInterval(1);
 
@@ -102,14 +102,15 @@ void WindowPainter::imRender() {
 
     ImGui::BeginTabBar("Info");
 
-    ImGui::TextWrapped("Camera movement in WALKER camera mode:\n"
+    ImGui::TextWrapped(
+        "Camera movement in WALKER camera mode:\n"
         "WASD are same as any other game q : camera up, e : camera down\n"
         "shift slows the camera down, ctrl speeds up\n"
         "third and first person modes are same as any other game\n"
-        "WASD movement space jump");
+        "WASD movement space jump"
+    );
 
     ImGui::EndTabBar();
-
 
     ImGui::Render();
 
@@ -134,7 +135,6 @@ void WindowPainter::massInit() {
         std::exit(-1);
     }
 
-    /* Make the window's context current */
     glfwMakeContextCurrent(window);
     glfwSetCursorPosCallback(this->window, WindowPainter::mouseEventCallback);
     glfwSetMouseButtonCallback(this->window, WindowPainter::buttonEventCallback);
@@ -181,14 +181,6 @@ void WindowPainter::mouseEventCallback(GLFWwindow* window, double xpos, double y
 
 void WindowPainter::buttonEventCallback(GLFWwindow* window, int button, int action, int mods) {
     WindowPainter* thisClass = (WindowPainter*)glfwGetWindowUserPointer(window);
-    
-    if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_RIGHT){
-        thisClass->smoothMousePos[0] = thisClass->mouseData[0];
-        thisClass->smoothMousePos[1] = thisClass->mouseData[1];
-
-        thisClass->smoothMouseDiff[0] = 0;
-        thisClass->smoothMouseDiff[1] = 0;
-    }
 }
 
 void WindowPainter::scrollEventCallback(GLFWwindow* window, double xoffset, double yoffset) {

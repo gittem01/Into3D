@@ -6,7 +6,10 @@
 Camera3D::Camera3D(glm::vec3 pos, WindowPainter* wp) {
 	this->pos = pos;
 	this->posAim = pos;
+
 	this->rot = glm::vec3(0, 0, 0);
+	this->rotAim = rot;
+
 	this->wp = wp;
 	this->window = wp->window;
 
@@ -25,20 +28,10 @@ glm::mat4 Camera3D::getPers(int width, int height)
 glm::mat4 Camera3D::getView(bool posIncl)
 {
 	if (posIncl) {
-		if (this->cameraType == WALKER || this->cameraType == FIRST_PERSON) {
-			return glm::lookAt(this->pos, this->lookDir + this->pos, this->topVec);
-		}
-		else if (this->cameraType == SURROUNDER) {
-			return glm::lookAt(this->pos, this->lookPos, this->topVec);
-		}
+		return glm::lookAt(this->pos, this->lookDir + this->pos, this->topVec);
 	}
 	else {
-		if (this->cameraType == WALKER || this->cameraType == FIRST_PERSON) {
-			return glm::lookAt(glm::vec3(0), this->lookDir, this->topVec);
-		}
-		else if (this->cameraType == SURROUNDER) {
-			return glm::lookAt(glm::vec3(0), this->lookPos - this->pos, this->topVec);
-		}
+		return glm::lookAt(glm::vec3(0), this->lookDir, this->topVec);
 	}
 }
 
@@ -62,39 +55,38 @@ void Camera3D::update() {
 	int width, height;
 	glfwGetWindowSize(this->window, &width, &height);
 	this->w = width; this->h = height;
-	this->pers = this->getPers(width, height);
+	this->pers = getPers(width, height);
 
 	if (this->wp->smoothMousePos[2] != 0)
 	{
 		this->changeZoom(0.1f * this->wp->smoothMousePos[2]);
 	}
-	this->rotateFunc(width, height);
-	this->updatePos();
+
+	if (!isAnimating){
+		this->rotateFunc(width, height);
+		this->updatePos();
+	}
+	else{
+		glm::vec3 posDiff = (posAim - pos) * animSmoothness;
+		glm::vec3 rotDiff = (rotAim - rot) * animSmoothness;
+		pos += posDiff;
+		rot += rotDiff;
+
+		updateLookDir();
+
+		if (glm::length(posDiff) < 0.001f && glm::length(rotDiff) < 0.001f){
+			isAnimating = false;
+		}
+	}
 }
 
 void Camera3D::rotateFunc(int width, int height)
 {
 	if (abs(wp->smoothDiff[0]) > 0 || abs(wp->smoothDiff[1]) > 0)
 	{
-		if (cameraType == SURROUNDER) {
-			surrounderCamera(wp->smoothDiff[0], -wp->smoothDiff[1]);
-		}
-		else if (cameraType == WALKER || cameraType == FIRST_PERSON) {
-			walkerCamera(wp->smoothDiff[0], wp->smoothDiff[1]);
-		}
+		this->rot.x += 0.01f * wp->smoothDiff[1] * wp->cameraSensitivity;
+		this->rot.y += 0.01f * wp->smoothDiff[0] * wp->cameraSensitivity;
 	}
-}
-
-void Camera3D::surrounderCamera(float diffx, float diffy)
-{
-	this->rot.y += 0.01f * diffx * wp->cameraSensitivity;
-	this->rot.x -= 0.01f * diffy * wp->cameraSensitivity;
-}
-
-void Camera3D::walkerCamera(float diffx, float diffy)
-{
-	this->rot.y += 0.004f * diffx * wp->cameraSensitivity;
-	this->rot.x += 0.004f * diffy * wp->cameraSensitivity;
 }
 
 glm::vec3 Camera3D::rotatePoint(glm::vec3 point, glm::vec3 rotAngles)
@@ -125,13 +117,13 @@ glm::vec3 Camera3D::rotatePointArround(glm::vec3 point, glm::vec3 arroundPoint, 
 
 void Camera3D::updateLookDir() {
 	glm::vec3 lookDirection = glm::vec3(0, 0, -1);
-	this->lookDir = glm::normalize(rotatePoint(lookDirection, this->rot));
+	this->lookDir = rotatePoint(lookDirection, this->rot);
 }
+
 void Camera3D::updatePos()
 {
 	if (cameraType == SURROUNDER) {
 		glm::vec3 basePos;
-		glm::vec3 baseTop = this->topVec;
 
 		if (this->atachedThing == NULL) {
 			basePos = glm::vec3(0, 0, this->dist);
@@ -140,33 +132,22 @@ void Camera3D::updatePos()
 		else {
 			SmartThing* s = (SmartThing*)this->atachedThing;
 			Vector3 p = s->rb->getTransform().getPosition();
-			lookPos.x = p.x;
-			lookPos.y = p.y;
-			lookPos.z = p.z;
-			if (this->rot.x < glm::radians(0.001f)) {
-				this->rot.x = glm::radians(0.001f);
-			}
-			else if (this->rot.x > glm::radians(89.99f)) {
-				this->rot.x = glm::radians(89.99f);
-			}
-			basePos = lookPos + glm::vec3(0, 0, this->dist);
-			basePos = this->rotatePointArround(basePos, lookPos, this->rot);
-			this->lookDir = glm::normalize(lookPos - basePos);
+			glm::vec3 lookPos = glm::vec3(p.x, p.y, p.z);
+			
+			controlRotation(&this->rot);
+			
+			basePos = getSurroundPos(s, rot);
 		}
-
-		baseTop = this->rotatePoint(topVec, this->rot);
-
+		
 		this->pos.x = basePos.x;
 		this->pos.y = basePos.y;
 		this->pos.z = basePos.z;
-		controlRotation();
 	}
 	else if (cameraType == WALKER || cameraType == FIRST_PERSON) {
 		updateFrstPos();
-		controlRotation();
-		updateLookDir();
+		controlRotation(&this->rot);
 	}
-
+	updateLookDir();
 	keyControl();
 }
 
@@ -240,40 +221,46 @@ void Camera3D::updateFrstPos()
 	}
 }
 
-void Camera3D::controlRotation() {
+void Camera3D::controlRotation(glm::vec3* rot) {
 	if (cameraType == SURROUNDER) {
-		if (rot.x > glm::pi<float>())
+		if (rot->x > glm::radians(180.0f))
 		{
-			rot.x -= glm::pi<float>() * 2;
+			rot->x -= glm::radians(180.0f) * 2;
 		}
-		else if (rot.x < -glm::pi<float>())
+		else if (rot->x < -glm::radians(180.0f))
 		{
-			rot.x += glm::pi<float>() * 2;
+			rot->x += glm::radians(180.0f) * 2;
 		}
 
-		if (abs(this->rot.x) > glm::radians(90.0f))
+		if (rot->x < glm::radians(0.0f)) {
+			rot->x = glm::radians(0.0f);
+		}
+		else if (rot->x > glm::radians(90.0f)) {
+			rot->x = glm::radians(90.0f) - 0.0001;
+			topVec.y = -1; // Only for value radians(90)
+		}
+
+		if (abs(rot->x) >= glm::radians(90.0f))
 		{
-			this->topVec.y = -1;
+			topVec.y = -1;
 		}
 		else {
-			this->topVec.y = +1;
+			topVec.y = +1;
 		}
 	}
 	else {
-		if (rot.x >= glm::pi<float>() / 2.0f) {
-			rot.x = glm::pi<float>() / 2.001f;
+		if (rot->x >= glm::radians(90.0f)) {
+			rot->x = glm::pi<float>() / 2.001f;
 		}
-		else if (rot.x <= -glm::pi<float>() / 2.0f) {
-			rot.x = -glm::pi<float>() / 2.001f;
+		else if (rot->x <= -glm::radians(90.0f)) {
+			rot->x = -glm::pi<float>() / 2.001f;
 		}
 	}
-
 }
 
 void Camera3D::atachBody(void* st)
 {
 	this->atachedThing = st;
-	this->cameraType = FIRST_PERSON;
 }
 
 void Camera3D::detachBody()
@@ -282,7 +269,41 @@ void Camera3D::detachBody()
 	this->cameraType = WALKER;
 }
 
-void Camera3D::switchCameraMode(CameraTypes type){
-	// TODO
-	cameraType = type;
+glm::vec3 Camera3D::getSurroundPos(void* st, glm::vec3 angle){
+	SmartThing* theSt = (SmartThing*)this->atachedThing;
+
+	Vector3 p = theSt->rb->getTransform().getPosition();
+	glm::vec3 basePos = glm::vec3(p.x, p.y, p.z);
+	
+	glm::vec3 lookPos = basePos + glm::vec3(0, 0, this->dist);
+	lookPos = this->rotatePointArround(lookPos, basePos, this->rot);
+
+	return lookPos;
+}
+
+glm::vec3 Camera3D::getVectorAngle(glm::vec3 vec){ // TODO
+	vec = glm::normalize(vec);
+
+	float angleY = asin(vec.x);
+	float angleX = asin(vec.z)/cos(angleY);
+
+	return glm::vec3(angleX, angleY, 0);
+}
+
+void Camera3D::switchCameraMode(CameraTypes type){ // TODO
+	//SmartThing* st = (SmartThing*)this->atachedThing;
+
+	if (type != this->cameraType){
+		// if (type == SURROUNDER){
+		// 	Vector3 p = st->rb->getTransform().getPosition();
+		// 	glm::vec3 v = glm::vec3(1, 10, 1);
+		// 	rotAim = getVectorAngle(v);
+
+		// 	posAim = getSurroundPos(st, rotAim);
+
+		// 	isAnimating = true;
+		// }
+
+		cameraType = type;
+	}	
 }

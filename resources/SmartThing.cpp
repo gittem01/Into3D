@@ -46,7 +46,7 @@ void SmartThing::update(Camera3D* cam) {
 
 void SmartThing::keyControl(Camera3D* cam) 
 {
-	glm::vec2 dirVec = glm::vec2(cam->lookDir.x, cam->lookDir.z);
+	glm::vec2 dirVec = glm::normalize(glm::vec2(cam->lookDir.x, cam->lookDir.z));
 	glm::vec3 p = cam->rotatePoint(glm::vec3(dirVec.x, 0, dirVec.y), glm::vec3(0, PI/2, 0));
 	glm::vec2 dirVecTan = glm::vec2(p.x, p.z);
 

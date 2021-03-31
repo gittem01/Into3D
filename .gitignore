@@ -5,6 +5,7 @@
 
 build/
 .vscode/
+.vscode/*
 
 # User-specific files
 *.rsuser

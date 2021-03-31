@@ -18,7 +18,14 @@ class Camera3D
 {
 public:
 	glm::vec3 pos;
+	glm::vec3 posAim;
+
 	glm::vec3 rot;
+	glm::vec3 rotAim;
+
+	bool isAnimating = false; // Will be inished later
+	float animSmoothness = 0.05f;
+
 	GLFWwindow* window;
 	float zoom = 1;
 	float freeSpeed = 0.1f;
@@ -26,12 +33,10 @@ public:
 	int w, h; // Screen Sizes
 	WindowPainter* wp;
 
-	glm::vec3 posAim = glm::vec3(0, 0, 0);
 
 	glm::vec2 zoomLimits = glm::vec2(0.5, 3);
 	glm::mat4 pers;
 
-	glm::vec3 lookPos = glm::vec3(0, 0, 0);
 	glm::vec3 lookDir = glm::vec3(0, 0, -1);
 	glm::vec3 topVec = glm::vec3(0, 1, 0);
 	float dist = 10;
@@ -66,9 +71,11 @@ public:
 	void updatePos();
 	void updateWlkrPos();
 	void updateFrstPos();
-	void controlRotation();
+	void controlRotation(glm::vec3* rot);
 	void atachBody(void* st);
 	void detachBody();
+	glm::vec3 getSurroundPos(void* st, glm::vec3 angle);
+	glm::vec3 getVectorAngle(glm::vec3 vec);
 	void switchCameraMode(CameraTypes type);
 };
 
