@@ -23,6 +23,8 @@ public:
 	float moveSmooth = 0.1f; float scrollSmooth = 0.1f;
 	float* smoothDiff = (float*)calloc(2, sizeof(float));
 
+	bool releaseQueue[3] = {false, false, false};
+
 	float keySmoothness = 0.5;
 
 	ImGuiIO io;

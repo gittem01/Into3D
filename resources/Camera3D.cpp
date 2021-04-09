@@ -131,11 +131,7 @@ void Camera3D::updatePos()
 		}
 		else {
 			SmartThing* s = (SmartThing*)this->atachedThing;
-			Vector3 p = s->rb->getTransform().getPosition();
-			glm::vec3 lookPos = glm::vec3(p.x, p.y, p.z);
-			
-			controlRotation(&this->rot);
-			
+			controlRotation(&this->rot);	
 			basePos = getSurroundPos(s, rot);
 		}
 		
@@ -276,7 +272,7 @@ glm::vec3 Camera3D::getSurroundPos(void* st, glm::vec3 angle){
 	glm::vec3 basePos = glm::vec3(p.x, p.y, p.z);
 	
 	glm::vec3 lookPos = basePos + glm::vec3(0, 0, this->dist);
-	lookPos = this->rotatePointArround(lookPos, basePos, this->rot);
+	lookPos = this->rotatePointArround(lookPos, basePos, angle);
 
 	return lookPos;
 }
@@ -291,18 +287,18 @@ glm::vec3 Camera3D::getVectorAngle(glm::vec3 vec){ // TODO
 }
 
 void Camera3D::switchCameraMode(CameraTypes type){ // TODO
-	//SmartThing* st = (SmartThing*)this->atachedThing;
+	SmartThing* st = (SmartThing*)this->atachedThing;
 
 	if (type != this->cameraType){
-		// if (type == SURROUNDER){
-		// 	Vector3 p = st->rb->getTransform().getPosition();
-		// 	glm::vec3 v = glm::vec3(1, 10, 1);
-		// 	rotAim = getVectorAngle(v);
+		if (type == SURROUNDER && false){ // for later use
+			Vector3 p = st->rb->getTransform().getPosition();
+			glm::vec3 v = glm::vec3(1, 10, 1);
+			rotAim = getVectorAngle(v);
 
-		// 	posAim = getSurroundPos(st, rotAim);
+			posAim = getSurroundPos(st, rotAim);
 
-		// 	isAnimating = true;
-		// }
+			isAnimating = true;
+		}
 
 		cameraType = type;
 	}	

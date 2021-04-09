@@ -13,6 +13,10 @@ void WindowPainter::clearMouseData() {
         if (this->mouseData[i] == 2) {
             this->mouseData[i] = 1;
         }
+        if (releaseQueue[i-2]){
+            mouseData[i] = 0;
+            releaseQueue[i-2] = false;
+        }
     }
     smoothMousePos[2] = 0;
 }
@@ -33,6 +37,8 @@ void WindowPainter::looper() {
     // }
 
     imRender();
+    
+    glfwPollEvents();
 
     for (int i = 0; i < 3; i++) {
         if (!io.MouseDownOwned[i]) {
@@ -40,16 +46,15 @@ void WindowPainter::looper() {
             if (io.MouseClicked[i]){
                 this->mouseData[pos] = 2;
             }
-            else if (io.MouseReleased[i])
-                this->mouseData[pos] = 0;
+            else if (io.MouseReleased[i]){
+                releaseQueue[i] = true;
+            }
         }
     }
 
     glfwSwapInterval(1);
 
     glfwSwapBuffers(window);
-
-    glfwPollEvents();
 
     smoothMousePos[0] += smoothMouseDiff[0] * moveSmooth;
     smoothMousePos[1] += smoothMouseDiff[1] * moveSmooth;
@@ -181,6 +186,7 @@ void WindowPainter::mouseEventCallback(GLFWwindow* window, double xpos, double y
 
 void WindowPainter::buttonEventCallback(GLFWwindow* window, int button, int action, int mods) {
     WindowPainter* thisClass = (WindowPainter*)glfwGetWindowUserPointer(window);
+    
 }
 
 void WindowPainter::scrollEventCallback(GLFWwindow* window, double xoffset, double yoffset) {
