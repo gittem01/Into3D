@@ -49,7 +49,7 @@ add_library(ReactPhysics3D
 include_directories(${CMAKE_SOURCE_DIR}/includes)
 include_directories(${CMAKE_SOURCE_DIR}/external/glad/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/glad/include/glad)
-include_directories(${CMAKE_SOURCE_DIR}/external/glfw/include/GLFW)
+include_directories(${CMAKE_SOURCE_DIR}/external/glm/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/glfw/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/ReactPhysics3D/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/imgui/include)
