@@ -1,12 +1,11 @@
 #include "Boxy.h"
 
+Shader* Boxy::shader;
+
 Boxy::Boxy(glm::vec3 pos, glm::vec3 size) {
 
 	this->VAO = this->getDefaultVAO();
-	std::string st1 = "/defaultShaders/";
-	std::string st2 = BASE_DIR;
-	std::string final = st2 + st1;
-	this->shader = new Shader(final.c_str());
+
 	this->pos = new glm::vec3(pos.x, pos.y, pos.z);
 	this->rotation = new glm::vec3(0, 0, 0);
 	this->size = new glm::vec3(size.x, size.y, size.z);
@@ -20,20 +19,19 @@ void Boxy::update(Camera3D* cam) {
 	this->pos->y = v.y;
 	this->pos->z = v.z;
 
-	this->shader->use();
 	glm::mat4 pers = cam->pers;
 	glm::mat4 view = cam->getView(true);
 	glm::mat4 model = this->getModel();
 	glm::mat4 rot = this->getRotation();
 
-	this->shader->setMat4("pers", pers);
-	this->shader->setMat4("view", view);
-	this->shader->setMat4("model", model);
-	this->shader->setMat4("rot", rot);
+	Boxy::shader->setMat4("pers", pers);
+	Boxy::shader->setMat4("view", view);
+	Boxy::shader->setMat4("model", model);
+	Boxy::shader->setMat4("rot", rot);
 
-	this->shader->setVec3("lightPos", cam->pos.x, cam->pos.y, cam->pos.z);
-	this->shader->setVec3("lightColor", 1, 1, 1);
-	this->shader->setVec3("objColor", color->x, color->y, color->z);
+	Boxy::shader->setVec3("lightPos", cam->pos.x, cam->pos.y, cam->pos.z);
+	Boxy::shader->setVec3("lightColor", 1, 1, 1);
+	Boxy::shader->setVec3("objColor", color->x, color->y, color->z);
 
 	glBindVertexArray(this->VAO);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);

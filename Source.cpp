@@ -18,7 +18,12 @@ int main()
 
 	Sky* sky = new Sky();
 
-	int n = 10;
+	std::string st1 = "/defaultShaders/";
+	std::string st2 = BASE_DIR;
+	std::string final = st2 + st1;
+	Boxy::shader = new Shader(final);
+
+	int n = 20;
 	Boxy** boxes = (Boxy**)malloc(n * sizeof(Boxy*));
 
 	Boxy* b2 = new Boxy(glm::vec3(0, -5, 0), glm::vec3(100, 1, 100));
@@ -52,6 +57,7 @@ int main()
 	while (!glfwWindowShouldClose( p->window ))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		Boxy::shader->use();
 		for (int i = 0; i < n; i++) {
 			boxes[i]->update(cam3D);
 		}

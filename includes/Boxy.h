@@ -1,7 +1,5 @@
 #pragma once
 
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <math.h>
 #include "Shader.h"
 #include "Camera3D.h"
@@ -17,8 +15,10 @@ public:
 	unsigned int VAO;
 	unsigned int TEX;
 	unsigned int id;
+
+	static Shader* shader;
+
 	RigidBody* rb;
-	Shader* shader;
 	glm::vec3* pos;
 	glm::vec3* rotation;
 	glm::vec3* size;
