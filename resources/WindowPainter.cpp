@@ -29,13 +29,6 @@ void WindowPainter::looper() {
 
     this->clearMouseData();
 
-    // for (char i=2; i<5; i++){
-    //     if (mouseData[i]){
-    //         cursorOutFunc(x, y);
-    //         break;
-    //     }
-    // }
-
     imRender();
     
     glfwPollEvents();
@@ -70,30 +63,12 @@ void WindowPainter::looper() {
     smoothMouseDiff[2] -= smoothMouseDiff[2] * scrollSmooth;
 }
 
-void WindowPainter::cursorOutFunc(int width, int height) {
-	if (this->mouseData[0] > width - 3) {
-		glfwSetCursorPos(window, 2, this->mouseData[1]);
-		this->smoothMouseDiff[0] += width - 3;
-	}
-	else if (this->mouseData[0] < 2) {
-		glfwSetCursorPos(window, width - 3, this->mouseData[1]);
-		this->smoothMouseDiff[0] -= width - 3;
-	}
-
-	if (this->mouseData[1] > height - 3) {
-		glfwSetCursorPos(window, this->mouseData[0], 2);
-		this->smoothMouseDiff[1] += height - 3;
-	}
-	else if (this->mouseData[1] < 2) {
-		glfwSetCursorPos(window, this->mouseData[0], height - 3);
-		this->smoothMouseDiff[1] -= height - 3;
-	}
-}
-
 void WindowPainter::imRender() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    ImGui::Text("FPS : %f", io.Framerate);
 
     ImGui::Checkbox("Enable Gravity", &enableGravity);
 
@@ -126,19 +101,32 @@ void WindowPainter::massInit() {
     
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
-
+    
     if (!glfwInit()){
         printf("GLFW initialization error\n");
         std::exit(-1);
     }
     glfwWindowHint(GLFW_SAMPLES, 4);
-    window = glfwCreateWindow(1600, 900, "Painted Window", NULL, NULL);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    glm::vec2 winSize(1600, 900);
+
+    window = glfwCreateWindow(winSize.x, winSize.y, "Painted Window", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
         printf("Window creation error\n");
         std::exit(-1);
     }
+
+    float x;
+    glfwGetWindowContentScale(window, &x, NULL);
+    dpiScaling = x;
+
+    glfwSetWindowSize(window, winSize.x / dpiScaling, winSize.y / dpiScaling);
 
     glfwMakeContextCurrent(window);
     glfwSetCursorPosCallback(this->window, WindowPainter::mouseEventCallback);
@@ -149,7 +137,6 @@ void WindowPainter::massInit() {
     glfwSetWindowSizeCallback(this->window, WindowPainter::windowSizeEventCallback);
     glfwSetWindowUserPointer(window, this);
 
-
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         printf("Failed to initialize GLAD");
@@ -158,7 +145,7 @@ void WindowPainter::massInit() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glViewport(0, 0, 1600, 900);
+    glViewport(0, 0, winSize.x, winSize.y);
 
     ImGui_ImplGlfw_InitForOpenGL(window, false);
     ImGui_ImplOpenGL3_Init();
@@ -167,6 +154,9 @@ void WindowPainter::massInit() {
 void WindowPainter::mouseEventCallback(GLFWwindow* window, double xpos, double ypos)
 {
     WindowPainter* thisClass = (WindowPainter*)glfwGetWindowUserPointer(window);
+    xpos *= thisClass->dpiScaling;
+    ypos *= thisClass->dpiScaling;
+
     thisClass->mouseData[0] = (int)xpos;
     thisClass->mouseData[1] = (int)ypos;
     
@@ -213,6 +203,8 @@ void WindowPainter::glfwWindowFocusCallback(GLFWwindow* window, int isFocused) {
     }
 }
 
-void WindowPainter::windowSizeEventCallback(GLFWwindow*, int width, int height) {
-    glViewport(0, 0, width, height);
+void WindowPainter::windowSizeEventCallback(GLFWwindow* window, int width, int height) {
+    WindowPainter* thisClass = (WindowPainter*)glfwGetWindowUserPointer(window);
+
+    glViewport(0, 0, width * thisClass->dpiScaling, height * thisClass->dpiScaling);
 }

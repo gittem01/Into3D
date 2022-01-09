@@ -27,6 +27,8 @@ public:
 
 	float keySmoothness = 0.5;
 
+	float dpiScaling;
+
 	ImGuiIO io;
 	int* lastMousePos = (int*)calloc(2, sizeof(int));
 	glm::vec2 lastWinPos, lastWinSize;
@@ -39,7 +41,6 @@ public:
 
 	void massInit();
 	void looper();
-	void cursorOutFunc(int width, int height);
 	void clearMouseData();
 	void imRender();
 	static void mouseEventCallback(GLFWwindow*, double, double);
